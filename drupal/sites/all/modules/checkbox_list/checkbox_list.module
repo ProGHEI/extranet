@@ -1,0 +1,81 @@
+<?php
+/**
+ * @file
+ * A block that show all users in checkbox list and send uid as url arguments
+ */
+
+/** Implements hook_help.
+ *
+ * Displays help and module information.
+ *
+ * @param path 
+ *   Which path of the site we're using to display help
+ * @param arg 
+ *   Array that holds the current path as returned from arg() function
+ */
+function checkbox_list_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#checkbox_list":
+      return '<p>' . t("Displays all users in checkbox list and send uid as url arguments") . '</p>';
+      break;
+  }
+} 
+
+/**
+ * Implements hook_block_info().
+ */
+function checkbox_list_block_info() {
+  $blocks['checkbox_list'] = array(
+    'info' => t('Membres'), //The name that will appear in the block list.
+    'cache' => DRUPAL_CACHE_PER_ROLE, //Default
+  );
+  return $blocks;
+}
+
+/**
+ * Checjbox list function. 
+ * 
+ * Retrieve posts from database
+ * users and their uid
+ * 
+ * @return 
+ *   A result set of users with uid
+ */
+function checkbox_list_contents(){
+    //Use Database API to retrieve current posts.
+  $query = db_select('users', 'u')
+    ->fields('u', array('uid', 'name'))
+    //->condition('uid', 0, '!=') //user 0 doesn't exist
+    //->condition('uid', 1, '!=') //user 1 is the admin, don't want to integrate him
+    ->orderBy('name', 'DESC') //Order by name
+    ->execute(); 
+  return $query;  
+}
+
+function checkbox_list_block_view($delta = '') {
+  switch($delta){
+    case 'checkbox_list':
+      $block['Membres'] = t('Checkbox List');
+      if(user_access('access content')){
+       //Retrieve and process data here.
+   } 
+   //Use our custom function to retrieve data.
+        $result = checkbox_list_contents();
+        //Array to contain items for the block to render.
+        $items = array();
+        //Iterate over the resultset and format as links.
+        foreach ($result as $user){
+          $items[] = array(
+            'membres' => l($user->name, 'test2/' . $user->uid),
+          );
+  }
+  if (empty($items)) { //No content in the last week.
+          $block['Membres'] = t('No uses available.');  
+        } else {
+          //Pass data through theme function.
+          $block['Membres'] = theme('item_list', array(
+            'items' => $items));
+        }
+      }
+    return $block;
+  }
