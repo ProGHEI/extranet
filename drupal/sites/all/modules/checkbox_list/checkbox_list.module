@@ -64,11 +64,13 @@ function checkbox_list_block_view($delta = '') {
         //Array to contain items for the block to render.
         $items = array();
         //Iterate over the resultset and format as links.
+        $items[] = '<form action="sites/all/modules/checkbox_list/formulaire.php" method="get">';
         foreach ($result as $user){
-          $items[] = array(
-              'data' => '<input type="checkbox" name="user" value='.$user->uid.'> '.$user->name,
-          );
+          $items[] = array('
+                  <input type="checkbox" name="user[]" value="'.$user->uid.'"/> '.$user->name);
     }
+    $items[] = '<input type="submit" value="afficher"/>';
+    $items[] = '</form>';
   }
   if (empty($items)) { //No content in the last week.
           $block['content'] = t('No uses available.');  
