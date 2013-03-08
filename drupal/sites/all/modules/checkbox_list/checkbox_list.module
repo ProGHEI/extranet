@@ -45,20 +45,20 @@ function checkbox_list_contents(){
     //Use Database API to retrieve current posts.
   $query = db_select('users', 'u')
     ->fields('u', array('uid', 'name'))
-    //->condition('uid', 0, '!=') //user 0 doesn't exist
-    //->condition('uid', 1, '!=') //user 1 is the admin, don't want to integrate him
-    ->orderBy('name', 'DESC') //Order by name
+    ->condition('uid', 0, '<>') //user 0 doesn't exist
+    ->condition('uid', 1, '<>') //user 1 is the admin, don't want to integrate him
+    ->orderBy('name', 'ASC') //Order by name
     ->execute(); 
   return $query;  
 }
 
 function checkbox_list_block_view($delta = '') {
+    $block = array();
   switch($delta){
     case 'checkbox_list':
-      $block['Membres'] = t('Checkbox List');
+      $block['subject'] = t('Checkbox List');
       if(user_access('access content')){
-       //Retrieve and process data here.
-   } 
+       //Retrieve and process data here. 
    //Use our custom function to retrieve data.
         $result = checkbox_list_contents();
         //Array to contain items for the block to render.
@@ -66,14 +66,15 @@ function checkbox_list_block_view($delta = '') {
         //Iterate over the resultset and format as links.
         foreach ($result as $user){
           $items[] = array(
-            'membres' => l($user->name, 'test2/' . $user->uid),
+              'data' => l($user->name, 'test2/' . $user->uid),
           );
+    }
   }
   if (empty($items)) { //No content in the last week.
-          $block['Membres'] = t('No uses available.');  
+          $block['content'] = t('No uses available.');  
         } else {
           //Pass data through theme function.
-          $block['Membres'] = theme('item_list', array(
+          $block['content'] = theme('item_list', array(
             'items' => $items));
         }
       }
