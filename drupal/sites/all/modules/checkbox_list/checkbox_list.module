@@ -63,8 +63,13 @@ function checkbox_list_block_view($delta = '') {
         $result = checkbox_list_contents();
         //Array to contain items for the block to render.
         $items = array();
+         $monurl = dirname($_SERVER['SERVER_PROTOCOL']) . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         //Iterate over the resultset and format as links.
-        $items[] = '<form action="sites/all/modules/checkbox_list/formulaire.php" method="get">';
+        if($monurl=="HTTP://projetiti/drupal/test2"){
+        $items[] = '<form action="sites/all/modules/checkbox_list/formulaire.php" method="get">';}
+        else{
+            $items[] = '<form action="../sites/all/modules/checkbox_list/formulaire.php" method="get">';
+        }
         foreach ($result as $user){
           $items[] = array('
                   <input type="checkbox" name="user[]" value="'.$user->uid.'"/> '.$user->name);
