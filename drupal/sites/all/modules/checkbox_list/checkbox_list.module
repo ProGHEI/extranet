@@ -70,16 +70,29 @@ function checkbox_list_block_view($delta = '') {
   }
   
   function checkbox_list_display($result){
-         $monurl = dirname($_SERVER['SERVER_PROTOCOL']) . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-        //Iterate over the resultset and format as links.
-        if($monurl=="HTTP://projetiti/drupal/test2"){
-        $items = '<form action="sites/all/modules/checkbox_list/formulaire.php" method="get">';}
-        else{
-            $items = '<form action="../sites/all/modules/checkbox_list/formulaire.php" method="get">';
+       global $user;
+        $monurl = dirname($_SERVER['SERVER_PROTOCOL']) . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];{
+        $items = '<form action="/drupal/sites/all/modules/checkbox_list/formulaire.php" method="get">';}
+        $url = parse_url($monurl);
+        $path=$url['path'];
+        $exploded_path = explode("/", $path);
+        $listarguments = $exploded_path[count($exploded_path)-1];
+        if($listarguments=="test2"){
+            foreach ($result as $person){
+                if($person->uid==$user->uid){
+                    $items .= '<input type="checkbox" checked="checked" name="user[]" value="'.$person->uid.'"/> '.$person->name.'<br>';
+                } else
+                $items .= '<input type="checkbox" name="user[]" value="'.$person->uid.'"/> '.$person->name.'<br>';
+            }
+        } else{
+            $arguments = explode("+", $listarguments);
+            foreach ($result as $person){
+            if(in_array($person->uid, $arguments)){
+                    $items .= '<input type="checkbox" checked="checked" name="user[]" value="'.$person->uid.'"/> '.$person->name.'<br>';
+                } else {
+                $items .= '<input type="checkbox" name="user[]" value="'.$person->uid.'"/> '.$person->name.'<br>';}
+            }
         }
-        foreach ($result as $user){
-          $items .= '<input type="checkbox" name="user[]" value="'.$user->uid.'"/> '.$user->name.'<br>';
-    }
     $items .= '<input type="submit" value="afficher"/>';
     $items .= '</form>';
     return $items;
